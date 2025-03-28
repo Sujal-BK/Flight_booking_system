@@ -4,7 +4,7 @@ const AppError = require('../utils/errors/app.error');
 
 const airplaneRepository = new AirplaneRepository();
 
-const createAirplane = async(data)=> {
+const createAirplane = async (data) => {
   try {
     const airplane = await airplaneRepository.create(data)
     return airplane;
@@ -21,7 +21,7 @@ const createAirplane = async(data)=> {
   }
 }
 
-const getAirplanes = async()=>{
+const getAirplanes = async () => {
   try {
     const airplanes = await airplaneRepository.getAll()
     return airplanes;
@@ -29,7 +29,51 @@ const getAirplanes = async()=>{
     throw new AppError('Cannot fetch data of all the airplanes', StatusCodes.INTERNAL_SERVER_ERROR)
   }
 }
+
+const getAirplane = async (id) => {
+  try {
+    const airplane = await airplaneRepository.get(id)
+
+    return airplane
+  } catch (error) {
+    if (error.statusCode == StatusCodes.NOT_FOUND) {
+      throw new AppError('The airplane you requested is not Found', error.statusCode)
+    }
+    throw new AppError('Cannot fetch data of the airplane by it`s ID', StatusCodes.INTERNAL_SERVER_ERROR)
+  }
+}
+
+
+const destroyAirplane = async (id) => {
+  try {
+    const response = await airplaneRepository.destroy(id);
+    return response
+  } catch (error) {
+    if (error.statusCode == StatusCodes.NOT_FOUND) {
+      throw new AppError('The airplane you requested to delete is not Found', error.statusCode)
+    }
+    throw new AppError('Cannot delete data of airplane', StatusCodes.INTERNAL_SERVER_ERROR)
+  }
+}
+
+
+const updateAirplane = async(id,data)=>{
+  try {
+   
+    const airplane = await airplaneRepository.update(id,data)
+    return airplane
+  } catch (error) {
+    if (error.statusCode == StatusCodes.NOT_FOUND) {
+      throw new AppError('The airplane you requested to update is not Found', error.statusCode)
+    }
+    throw new AppError('Cannot update data of airplane', StatusCodes.INTERNAL_SERVER_ERROR)
+  }
+}
+
 module.exports = {
   createAirplane,
-  getAirplanes
+  getAirplanes,
+  getAirplane,
+  destroyAirplane,
+  updateAirplane
 }
